@@ -1,4 +1,5 @@
-name: Dwellers Build Release
+name: EnX Build Release
+
 on:
   push:
     branches: [ main ]
@@ -6,45 +7,49 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Java 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.5'
+          flutter-version: '3.24.5' 
           channel: 'stable'
-          cache: false # Desativado para garantir que baixe o motor limpo
+          cache: true
 
-      - name: Rebuild Native Environment
-        run: |
-          # Remove arquivos que podem conter caminhos errados do Replit
-          rm -f android/local.properties
-          rm -f .flutter-plugins
-          rm -f .flutter-plugins-dependencies
-          
-          # Limpeza profunda
-          flutter clean
-          flutter pub get
-          
-          # FORÇA o download do motor do Flutter pelo sistema interno (mais estável que o Gradle)
-          flutter precache --android
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.2
 
+      # Esse passo vai mostrar no log onde estão seus arquivos
+      - name: Debug - List Files
+        run: ls -R
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Procura o arquivo e aplica o chmod diretamente, sem variáveis frágeis
+      - name: Make Gradlew Executable
+        run: find . -name gradlew -exec chmod +x {} +
+
+      # Se o seu pubspec.yaml não estiver na raiz, o Flutter precisa saber onde entrar
       - name: Build APK Release
         run: |
-          # Build usando o comando oficial, desativando tree-shake de ícones para evitar erros de memória
-          flutter build apk --release --no-tree-shake-icons
+          PROJECT_PATH=$(find . -name pubspec.yaml -exec dirname {} \;)
+          cd $PROJECT_PATH
+          flutter build apk --release
 
-      - name: Upload APK Artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: EnX-Dwellers-Release
-          path: build/app/outputs/flutter-apk/app-release.apk
-          
+          path: "**/build/app/outputs/flutter-apk/app-release.apk"
