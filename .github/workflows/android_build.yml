@@ -52,5 +52,4 @@ jobs:
         with:
           name: EnX-Dwellers-Release
           # Ajustado: Captura qualquer APK gerado no caminho de build
-          path: "**/build/app/outputs/flutter-apk/*.apk"
-          
+          path: build/app/outputs/flutter-apk/app-release.apk
