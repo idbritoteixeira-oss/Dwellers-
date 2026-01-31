@@ -1,8 +1,34 @@
-      - name: Build APK
+name: Dwellers Build
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: 'stable'
+
+      - name: Precache and Build
         run: |
           flutter pub get
-          # Este comando força o download de todos os artefatos do motor antes do build
           flutter precache --android
-          # Build sem o tree-shake para evitar erros de recursos
           flutter build apk --release --no-tree-shake-icons
-          
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dwellers-Release
+          path: build/app/outputs/flutter-apk/app-release.apk

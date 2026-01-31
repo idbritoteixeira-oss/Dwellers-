@@ -17,7 +17,7 @@ dev_dependencies:
     sdk: flutter
   flutter_launcher_icons: "^0.13.1"
 
-# O launcher_icons ainda precisa de um arquivo específico para gerar o ícone do Android
+# O launcher_icons ainda precisa de um arquivo específico ara gerar o ícone do Android
 flutter_launcher_icons:
   android: true
   ios: false
