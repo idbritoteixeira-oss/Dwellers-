@@ -13,13 +13,13 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven { url 'https://storage.googleapis.com/download.flutter.io' }
     }
 }
 
 plugins {
     id "dev.flutter.flutter-gradle-plugin" version "1.0.0" apply false
     id "com.android.application" version "7.3.0" apply false
-    // Atualizado para 1.8.22 para bater com o Gradle 8+
     id "org.jetbrains.kotlin.android" version "1.8.22" apply false 
 }
 
