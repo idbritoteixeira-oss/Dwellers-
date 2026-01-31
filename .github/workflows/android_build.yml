@@ -1,4 +1,4 @@
-name: Dwellers Build
+name: Dwellers Build Release
 on:
   push:
     branches: [ main ]
@@ -7,9 +7,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
@@ -20,15 +21,30 @@ jobs:
         with:
           flutter-version: '3.24.5'
           channel: 'stable'
+          cache: false # Desativado para garantir que baixe o motor limpo
 
-      - name: Precache and Build
+      - name: Rebuild Native Environment
         run: |
+          # Remove arquivos que podem conter caminhos errados do Replit
+          rm -f android/local.properties
+          rm -f .flutter-plugins
+          rm -f .flutter-plugins-dependencies
+          
+          # Limpeza profunda
+          flutter clean
           flutter pub get
+          
+          # FORÇA o download do motor do Flutter pelo sistema interno (mais estável que o Gradle)
           flutter precache --android
+
+      - name: Build APK Release
+        run: |
+          # Build usando o comando oficial, desativando tree-shake de ícones para evitar erros de memória
           flutter build apk --release --no-tree-shake-icons
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Dwellers-Release
+          name: EnX-Dwellers-Release
           path: build/app/outputs/flutter-apk/app-release.apk
+          
