@@ -23,33 +23,34 @@ jobs:
         with:
           flutter-version: '3.24.5' 
           channel: 'stable'
-          cache: true
+          cache: false # Ajustado: Evita falha por queda de serviço do GitHub
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.2
+          cache-disabled: true # Ajustado: Garante soberania se o servidor de cache cair
 
-      # Esse passo vai mostrar no log onde estão seus arquivos
       - name: Debug - List Files
         run: ls -R
 
       - name: Install dependencies
         run: flutter pub get
 
-      # Procura o arquivo e aplica o chmod diretamente, sem variáveis frágeis
       - name: Make Gradlew Executable
         run: find . -name gradlew -exec chmod +x {} +
 
-      # Se o seu pubspec.yaml não estiver na raiz, o Flutter precisa saber onde entrar
       - name: Build APK Release
         run: |
           PROJECT_PATH=$(find . -name pubspec.yaml -exec dirname {} \;)
           cd $PROJECT_PATH
-          flutter build apk --release
+          # Adicionado --no-tree-shake-icons para estabilidade
+          flutter build apk --release --no-tree-shake-icons
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: EnX-Dwellers-Release
-          path: "**/build/app/outputs/flutter-apk/app-release.apk"
+          # Ajustado: Captura qualquer APK gerado no caminho de build
+          path: "**/build/app/outputs/flutter-apk/*.apk"
+          
