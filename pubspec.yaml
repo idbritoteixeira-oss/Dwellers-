@@ -1,0 +1,35 @@
+name: dwellers
+description: Labs EnX/Dwellers
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  http: ^1.6.0
+  audioplayers: ^5.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: "^0.13.1"
+
+# O launcher_icons ainda precisa de um arquivo específico para gerar o ícone do Android
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/logo.png" 
+  adaptive_icon_background: "#0A0E19"
+  adaptive_icon_foreground: "assets/images/logo.png"
+
+flutter:
+  uses-material-design: true
+
+  # REPARO: Injeção em massa. O Flutter agora busca TUDO que estiver nestas pastas.
+  assets:
+    - assets/images/
+    - assets/sounds/
+    

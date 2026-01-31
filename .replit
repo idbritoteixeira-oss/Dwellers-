@@ -1,0 +1,17 @@
+entrypoint = "lib/main.dart"
+modules = ["dart-3.3"]
+
+[nix]
+channel = "stable-24_05"
+packages = ["flutter"]
+
+[deployment]
+run = "flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8080"
+deploymentTarget = "cloudrun"
+
+[agent]
+expertMode = true
+
+[[ports]]
+localPort = 8080
+externalPort = 80
