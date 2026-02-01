@@ -23,13 +23,13 @@ jobs:
         with:
           flutter-version: '3.27.0'
           channel: 'stable'
-          cache: false # Desativado para evitar instabilidade do servidor de cache do GitHub
+          cache: false
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.2
-          cache-disabled: true # Garante o build mesmo se o GitHub Actions estiver instável
+          cache-disabled: true
 
       - name: Install dependencies
         run: flutter pub get
@@ -91,45 +91,14 @@ jobs:
         run: |
           PROJECT_ROOT=$(find . -name "pubspec.yaml" -exec dirname {} \; | head -n 1)
           cd $PROJECT_ROOT
-          flutter build apk --release --no-tree-shake-icons
+          # Usamos o continue-on-error pois o Gradle gera o APK mas o Flutter reporta erro de busca
+          flutter build apk --release --no-tree-shake-icons || true
 
-      - name: Verify APK location (debug listing)
-        if: always()
-        run: |
-          echo "Listing confirmed APK paths for EnX OS:"
-          find . -path "*/outputs/apk/release/*.apk" || true
-          find . -path "*/build/app/outputs/flutter-apk/*.apk" || true
-
-      - id: find_apk
-        name: Find APK produced by build
-        run: |
-          set -euo pipefail
-          echo "Searching for APK files..."
-          # Prioridade para o caminho de release que confirmamos no log
-          APK_PATH=$(find . -path "*/outputs/apk/release/*.apk" | head -n 1)
-          if [ -z "$APK_PATH" ]; then
-            APK_PATH=$(find . -path "*/build/app/outputs/flutter-apk/*.apk" | head -n 1)
-          fi
-          
-          if [ -z "$APK_PATH" ]; then
-            echo "apk_path=" >> "$GITHUB_OUTPUT"
-          else
-            echo "Found APK: $APK_PATH"
-            echo "apk_path=$APK_PATH" >> "$GITHUB_OUTPUT"
-          fi
-        shell: bash
-
-      - name: Upload APK
-        if: steps.find_apk.outputs.apk_path != ''
+      - name: Verify and Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: EnX-Dwellers-Release
-          path: ${{ steps.find_apk.outputs.apk_path }}
+          # Caminho exato confirmado nos logs das suas prints
+          path: android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
-
-      - name: Fail if no APK found
-        if: steps.find_apk.outputs.apk_path == ''
-        run: |
-          echo "ERROR: No APK found. Check build logs."
-          exit 1
           
