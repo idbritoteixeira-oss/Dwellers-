@@ -8,45 +8,55 @@ android {
     namespace = "com.example.workspace"
     compileSdk = 33
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
+compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+kotlinOptions {
+    jvmTarget = "17"
+}
 
-    defaultConfig {
-        applicationId = "com.example.workspace"
-        minSdk = 21
-        targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
-    }
+defaultConfig {
+    applicationId = "com.example.workspace"
+    minSdk = 21
+    targetSdk = 33
+    versionCode = 1
+    versionName = "1.0"
+    // multiDexEnabled true // descomente se necessário
+}
 
-    signingConfigs {
-        // Declara uma signing config debug para reutilizar na build release (permite gerar .apk sem keystore release)
-        debug {}
-    }
+signingConfigs {
+    // Permite assinar release com a mesma config debug (apenas para builds locais/CI de teste)
+    debug {}
+}
 
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.debug
-            shrinkResources false
-            minifyEnabled false
-        }
+buildTypes {
+    release {
+        signingConfig = signingConfigs.debug
+        shrinkResources false
+        minifyEnabled false
     }
+}
 
-    // Evita conflitos com recursos comuns em algumas dependências
-    packagingOptions {
-        resources {
-            excludes += [
-                "META-INF/DEPENDENCIES",
-                "META-INF/LICENSE",
-                "META-INF/LICENSE.txt",
-                "META-INF/license.txt",
-                "META-INF/NOTICE",
+packagingOptions {
+    resources {
+        excludes += [
+            "META-INF/DEPENDENCIES",
+            "META-INF/LICENSE",
+            "META-INF/LICENSE.txt",
+            "META-INF/license.txt",
+            "META-INF/NOTICE",
+            "META-INF/NOTICE.txt",
+            "META-INF/notice.txt"
+        ]
+        pickFirsts += [
+            "META-INF/*.kotlin_module"
+        ]
+    }
+}
+
+// buildToolsVersion = "33.0.2" // descomente se precisar fixar a versão               "META-INF/NOTICE",
                 "META-INF/NOTICE.txt",
                 "META-INF/notice.txt"
             ]
