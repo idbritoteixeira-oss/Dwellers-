@@ -23,27 +23,25 @@ jobs:
         with:
           flutter-version: '3.27.0'
           channel: 'stable'
-          cache: false # AJUSTE: Desativado para evitar o erro "Our services aren't available" (503)
+          cache: false # Desativado para evitar instabilidade do servidor de cache do GitHub
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.2
-          cache-disabled: true # AJUSTE: Garante soberania caso o servidor de cache do GitHub falhe
+          cache-disabled: true # Garante o build mesmo se o GitHub Actions estiver instável
 
       - name: Install dependencies
         run: flutter pub get
 
       - name: Create local.properties
         run: |
-          # AJUSTE: Garante que a pasta android existe antes de criar o arquivo
           mkdir -p android
           echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
           echo "sdk.dir=$ANDROID_SDK_ROOT" >> android/local.properties
 
       - name: Restore Gradle Wrapper
         run: |
-          # AJUSTE: Busca dinâmica da pasta android para evitar erro de diretório inexistente
           ANDROID_DIR=$(find . -name "android" -type d | head -n 1)
           cd $ANDROID_DIR
           if [ -f ./gradlew ]; then
@@ -91,7 +89,6 @@ jobs:
 
       - name: Build APK
         run: |
-          # AJUSTE: Localiza o pubspec.yaml e builda a partir da pasta correta
           PROJECT_ROOT=$(find . -name "pubspec.yaml" -exec dirname {} \; | head -n 1)
           cd $PROJECT_ROOT
           flutter build apk --release --no-tree-shake-icons
@@ -99,19 +96,19 @@ jobs:
       - name: Verify APK location (debug listing)
         if: always()
         run: |
-          echo "Listing possible APK paths:"
-          find . -path "*/build/app/outputs/flutter-apk/*" -name "*.apk" || true
-          find . -path "*/android/app/build/outputs/apk/release/*" -name "*.apk" || true
+          echo "Listing confirmed APK paths for EnX OS:"
+          find . -path "*/outputs/apk/release/*.apk" || true
+          find . -path "*/build/app/outputs/flutter-apk/*.apk" || true
 
       - id: find_apk
         name: Find APK produced by build
         run: |
           set -euo pipefail
           echo "Searching for APK files..."
-          # AJUSTE: Busca recursiva para encontrar o APK em qualquer subpasta do EnX OS
-          APK_PATH=$(find . -path "*/build/app/outputs/flutter-apk/*.apk" | head -n 1)
+          # Prioridade para o caminho de release que confirmamos no log
+          APK_PATH=$(find . -path "*/outputs/apk/release/*.apk" | head -n 1)
           if [ -z "$APK_PATH" ]; then
-            APK_PATH=$(find . -path "*/outputs/apk/release/*.apk" | head -n 1)
+            APK_PATH=$(find . -path "*/build/app/outputs/flutter-apk/*.apk" | head -n 1)
           fi
           
           if [ -z "$APK_PATH" ]; then
@@ -126,8 +123,9 @@ jobs:
         if: steps.find_apk.outputs.apk_path != ''
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
+          name: EnX-Dwellers-Release
           path: ${{ steps.find_apk.outputs.apk_path }}
+          if-no-files-found: error
 
       - name: Fail if no APK found
         if: steps.find_apk.outputs.apk_path == ''
