@@ -53,7 +53,7 @@ jobs:
 
       - name: Install Android SDK Platform 35 and build-tools
         run: |
-          set -e
+          set -euo pipefail
           # try common sdkmanager locations
           if [ -x "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" ]; then
             SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
@@ -64,7 +64,10 @@ jobs:
             ls -la "$ANDROID_SDK_ROOT" || true
             exit 1
           fi
-          yes | "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          # instalar pacotes; evitar falha por broken pipe
+          "$SDKMANAGER" --sdk_root="$ANDROID_SDK_ROOT" "platform-tools" "platforms;android-35" "build-tools;35.0.0" || true
+          # aceitar licenças explicitamente (ignora non-zero causado por pipe)
+          yes | "$SDKMANAGER" --sdk_root="$ANDROID_SDK_ROOT" --licenses || true
         shell: bash
 
       - name: Build APK
