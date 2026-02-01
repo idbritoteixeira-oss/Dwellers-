@@ -82,6 +82,9 @@ jobs:
           yes | "$SDKMANAGER" --sdk_root="$ANDROID_SDK_ROOT" --licenses || true
         shell: bash
 
+      - name: Clean build
+        run: flutter clean
+
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
 
@@ -99,7 +102,6 @@ jobs:
         run: |
           set -euo pipefail
           echo "Searching for APK files..."
-          # Busca prioritária no caminho padrão do Flutter 3
           APK_PATH=$(find build/app/outputs/flutter-apk -type f -name "*.apk" | head -n 1)
           if [ -z "$APK_PATH" ]; then
             APK_PATH=$(find android -type f -name "*.apk" | head -n 1)
@@ -125,4 +127,3 @@ jobs:
         run: |
           echo "ERROR: No APK found. Check build logs."
           exit 1
-          
