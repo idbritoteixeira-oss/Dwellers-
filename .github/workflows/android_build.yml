@@ -45,6 +45,8 @@ jobs:
           gradle wrapper --gradle-version 8.2
           chmod +x gradlew
           cd ..
+        
+      - name: Install Android SDK Platform 35 run: yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-35"
       
       - name: Build APK
         run: flutter build apk --release
