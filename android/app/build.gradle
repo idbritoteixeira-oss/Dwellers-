@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.workspace"
-    compileSdk = 34 // Definido manualmente para evitar erros de metadata
+    compileSdk = 35 // Definido manualmente para evitar erros de metadata
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -21,7 +21,7 @@ android {
         applicationId = "com.example.workspace"
         // Definimos os valores fixos para garantir compatibilidade com Kotlin 1.9
         minSdk = 21 
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }
