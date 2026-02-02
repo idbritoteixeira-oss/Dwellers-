@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import 'pages/index.dart';
 import 'pages/register-step-1.dart';
 import 'pages/register-step-2.dart';
 import 'pages/register-step-3.dart';
 import 'pages/register-step-4.dart';
 import 'pages/login-step-1.dart'; 
 import 'pages/login-step-2.dart';
-import 'pages/processing.dart'; // Nova ponte de validação
+import 'pages/processing.dart'; 
 import 'pages/dashboard.dart'; 
-import 'pages/splash.dart';     // Tela de abertura com som intro
+import 'pages/splash.dart';     
 import 'style.dart';
 
 void main() {
-  // Garante que os plugins (como audioplayers) sejam inicializados antes do runApp
+  // Inicialização vital para o AudioPlayer e Services do EnX OS
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const DwellersApp());
 }
@@ -24,15 +23,15 @@ class DwellersApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'EnX Dwellers',
+      title: 'Dwellers',
       theme: EnXStyle.theme,
       
-      // O sistema agora desperta na SplashScreen
+      // O sistema desperta na Splash, que agora contém o Menu Principal
       initialRoute: '/splash', 
       
       routes: {
+        // Agora o ponto de entrada único é a Splash unificada
         '/splash': (context) => const EnXSplashScreen(),
-        '/index': (context) => const IndexPage(),
         
         // Fluxo de Login
         '/login-step-1': (context) => const LoginStep1(),
@@ -44,10 +43,10 @@ class DwellersApp extends StatelessWidget {
         '/register-step-3': (context) => const RegisterStep3(),
         '/register-step-4': (context) => RegisterStep4(),
         
-        // O "Coração" da validação dos Frameworks
+        // Processamento de Criptografia EnX18 / ID Public-Private
         '/processing': (context) => const ProcessingPage(),
         
-        // Destino Final
+        // Dashboard do Habitante
         '/dashboard': (context) => const DashboardPage(),
       },
     );

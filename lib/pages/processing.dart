@@ -22,55 +22,65 @@ class _ProcessingPageState extends State<ProcessingPage> {
   @override
   void initState() {
     super.initState();
+    // Pré-carrega o áudio no cache para evitar atraso na primeira execução
+    _audioPlayer.setSource(AssetSource('sounds/sync.mp3'));
     _startSystemCheck();
   }
 
-  // Função interna para disparar o som de sincronia
-  void _playSyncSound() {
-    _audioPlayer.play(AssetSource('sounds/sync.mp3'), volume: 0.5);
+  // CORREÇÃO: Função de áudio robusta para disparos repetitivos
+  Future<void> _playSyncSound() async {
+    try {
+      // Para o som atual e volta para o início instantaneamente
+      await _audioPlayer.stop(); 
+      await _audioPlayer.play(AssetSource('sounds/sync.mp3'), volume: 0.6);
+    } catch (e) {
+      debugPrint("Erro de sincronia de áudio: $e");
+    }
   }
 
   Future<void> _startSystemCheck() async {
+    // Pequena pausa inicial para o usuário se situar na tela
+    await Future.delayed(const Duration(milliseconds: 1000));
+
     final dynamic args = ModalRoute.of(context)?.settings.arguments;
 
-    // 1. Dwellers
-    await Future.delayed(const Duration(milliseconds: 1500));
-    _playSyncSound();
+    // 1. Dwellers - Frameworks/Dwellers/nation
+    await _playSyncSound();
     setState(() {
       _dwellerReady = true;
       _progress = 0.25;
       _currentTask = "SYNCING DWELLER VAULT...";
     });
-
-    // 2. Inasx
     await Future.delayed(const Duration(milliseconds: 1500));
-    _playSyncSound();
+
+    // 2. Inasx - Frameworks/Inasx/multiverse
+    await _playSyncSound();
     setState(() {
       _inasxReady = true;
       _progress = 0.50;
       _currentTask = "CONNECTING INASX MULTIVERSE...";
     });
-
-    // 3. Pigeon
     await Future.delayed(const Duration(milliseconds: 1500));
-    _playSyncSound();
+
+    // 3. Pigeon - Frameworks/Pigeon/mailbox
+    await _playSyncSound();
     setState(() {
       _pigeonReady = true;
       _progress = 0.75;
       _currentTask = "OPENING PIGEON TUNNEL...";
     });
-
-    // 4. FreeMarket
     await Future.delayed(const Duration(milliseconds: 1500));
-    _playSyncSound();
+
+    // 4. FreeMarket - Frameworks/FreeMarket/seller
+    await _playSyncSound();
     setState(() {
       _marketReady = true;
       _progress = 1.0;
       _currentTask = "FREE-MARKET READY";
     });
 
-    // Boot Final
-    await Future.delayed(const Duration(milliseconds: 1200));
+    // Boot Final do EnX OS
+    await Future.delayed(const Duration(milliseconds: 1500));
     if (mounted) {
       Navigator.pushReplacementNamed(context, '/dashboard', arguments: args);
     }
@@ -82,6 +92,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
     super.dispose();
   }
 
+  // O restante do build e _buildModuleStatus permanecem intactos como você pediu
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,14 +103,11 @@ class _ProcessingPageState extends State<ProcessingPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Core OS
               Hero(
                 tag: 'enx_logo',
                 child: Image.asset('assets/images/enx.png', width: 60)
               ),
               const SizedBox(height: 50),
-
-              // Grid de Módulos
               Wrap(
                 spacing: 25,
                 runSpacing: 25,
@@ -111,10 +119,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
                   _buildModuleStatus('mkt.png', "MARKET", _marketReady),
                 ],
               ),
-
               const SizedBox(height: 60),
-
-              // Barra de Status
               Text(
                 _currentTask,
                 style: const TextStyle(color: Colors.white38, fontSize: 9, letterSpacing: 2, fontFamily: 'monospace'),
