@@ -34,7 +34,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
     final dynamic args = ModalRoute.of(context)?.settings.arguments;
 
     // 1. Dwellers
-    await Future.delayed(const Duration(milliseconds: 750));
+    await Future.delayed(const Duration(milliseconds: 1500));
     _playSyncSound();
     setState(() {
       _dwellerReady = true;
@@ -43,7 +43,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
     });
 
     // 2. Inasx
-    await Future.delayed(const Duration(milliseconds: 1400));
+    await Future.delayed(const Duration(milliseconds: 1500));
     _playSyncSound();
     setState(() {
       _inasxReady = true;
@@ -52,7 +52,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
     });
 
     // 3. Pigeon
-    await Future.delayed(const Duration(milliseconds: 1000));
+    await Future.delayed(const Duration(milliseconds: 1500));
     _playSyncSound();
     setState(() {
       _pigeonReady = true;
@@ -61,7 +61,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
     });
 
     // 4. FreeMarket
-    await Future.delayed(const Duration(milliseconds: 1200));
+    await Future.delayed(const Duration(milliseconds: 1500));
     _playSyncSound();
     setState(() {
       _marketReady = true;
